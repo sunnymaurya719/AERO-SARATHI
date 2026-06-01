@@ -7,9 +7,9 @@ import { Logo } from './Logo';
 
 const LINKS = [
   { href: '/routes', label: 'Routes' },
-  { href: '/vehicles', label: 'Vehicles' },
-  { href: '/#how', label: 'How It Works' },
-  { href: '/#why', label: 'Why Us' },
+  //{ href: '/vehicles', label: 'Vehicles' },
+  //{ href: '/#how', label: 'How It Works' },
+  //{ href: '/#why', label: 'Why Us' },
 ];
 
 export function Navbar() {
