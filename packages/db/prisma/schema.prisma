@@ -1,0 +1,1056 @@
+// Aero Sarathi — Prisma schema
+// Phase 1 subset: User, Session, OtpRequest, Quote, Booking, BookingStatusEvent, FareRule.
+// Full schema grows in later phases (Payment, Cancellation, Driver, etc.).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  phone     String    @unique
+  name      String?
+  email     String?
+  role      Role      @default(CUSTOMER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+  sessions  Session[]
+  driver    Driver?
+  deviceTokens DeviceToken[]
+  // ── Phase 6: referrals ──
+  referralCode String? @unique
+  referredById String?
+
+  @@index([referredById])
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  OPS
+  DRIVER
+}
+
+model Session {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshHash String    @unique
+  userAgent   String?
+  ip          String?
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model OtpRequest {
+  id        String   @id @default(uuid())
+  phone     String
+  codeHash  String
+  attempts  Int      @default(0)
+  consumed  Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([phone, createdAt])
+}
+
+model Quote {
+  id            String   @id @default(uuid())
+  pickupAddress String
+  pickupLat     Float
+  pickupLng     Float
+  dropAddress   String
+  dropLat       Float
+  dropLng       Float
+  scheduledAt   DateTime
+  distanceKm    Float
+  durationMin   Int
+  fares         Json
+  // ── Phase 6: dynamic pricing (surge locked into the quote) ──
+  routeBucket      String?
+  surgeMultiplier  Float    @default(1.0)
+  surgeRuleVersion Int?
+  surgeBreakdown   Json?
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model Booking {
+  id              String               @id @default(uuid())
+  code            String               @unique
+  userId          String
+  user            User                 @relation(fields: [userId], references: [id])
+  quoteId         String
+  vehicleCategory VehicleCategory
+  passengerName   String
+  passengerPhone  String
+  pickupAddress   String
+  pickupLat       Float
+  pickupLng       Float
+  dropAddress     String
+  dropLat         Float
+  dropLng         Float
+  scheduledAt     DateTime
+  estimatedKm     Float
+  estimatedMin    Int
+  fareTotal       Int
+  tokenAmount     Int
+  balanceAmount   Int
+  status          BookingStatus        @default(PENDING)
+  statusHistory   BookingStatusEvent[]
+  payments        Payment[]
+  cancellation    Cancellation?
+  notifications   Notification[]
+  notes           BookingNote[]
+  driverId        String?
+  driver          Driver?              @relation(fields: [driverId], references: [id])
+  vehicleId       String?
+  vehicle         Vehicle?             @relation(fields: [vehicleId], references: [id])
+  confirmedAt     DateTime?
+  cancelledAt     DateTime?
+  // ── Phase 4: assignment automation ──
+  assignedAt      DateTime?
+  assignmentJobId String?
+  offers          Offer[]
+  attempts        AssignmentAttempt[]
+  // ── Phase 5: live tracking ──
+  enRouteAt       DateTime?
+  arrivedAt       DateTime?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  actualKm        Float?
+  actualMin       Int?
+  trip            Trip?
+  sosEvents       SosEvent[]
+  trackTokens     TrackToken[]
+  // ── Phase 8: multi-city ──
+  cityId          String? // operating city (null = legacy/default city)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([scheduledAt, status])
+  @@index([driverId, scheduledAt])
+  @@index([cityId, scheduledAt])
+}
+
+enum VehicleCategory {
+  HATCHBACK
+  SEDAN
+  SUV
+  LUXURY
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  DRIVER_ASSIGNED
+  EN_ROUTE
+  ONGOING
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+model BookingStatusEvent {
+  id        String         @id @default(uuid())
+  bookingId String
+  booking   Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  from      BookingStatus?
+  to        BookingStatus
+  actorId   String?
+  reason    String?
+  createdAt DateTime       @default(now())
+
+  @@index([bookingId, createdAt])
+}
+
+model FareRule {
+  id             String          @id @default(uuid())
+  cityId         String? // Phase 8: city-scoped fares (null = legacy/default city)
+  category       VehicleCategory
+  baseFare       Int
+  baseKm         Int
+  perKm          Int
+  perMin         Int
+  nightSurcharge Float           @default(0)
+  minFare        Int
+  tokenPercent   Float           @default(0.20)
+  effectiveFrom  DateTime
+  effectiveTo    DateTime?
+  createdById    String?
+  supersededBy   String?
+  notes          String?
+
+  @@index([category, effectiveFrom])
+  @@index([cityId, category, effectiveFrom])
+}
+
+// ── Phase 2: Payments & Confirmation ──────────────────────────────────────
+
+model Payment {
+  id             String        @id @default(uuid())
+  bookingId      String
+  booking        Booking       @relation(fields: [bookingId], references: [id])
+  amount         Int // paise — total intended
+  amountPaid     Int           @default(0) // paise — actually captured
+  currency       String        @default("INR")
+  type           PaymentType
+  status         PaymentStatus @default(CREATED)
+  gateway        String        @default("razorpay")
+  gatewayOrderId String?       @unique // order_xxx
+  gatewayPayId   String?       @unique // pay_xxx
+  gatewayMethod  String? // upi | card | netbanking | wallet
+  gatewayFee     Int? // paise, from webhook
+  gatewayTax     Int? // paise
+  failureCode    String?
+  failureReason  String?
+  notes          Json?
+  capturedAt     DateTime?
+  refunds        Refund[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([bookingId, type])
+  @@index([gatewayOrderId])
+}
+
+enum PaymentType {
+  TOKEN
+  BALANCE
+  REFUND
+}
+
+enum PaymentStatus {
+  CREATED
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+  PARTIAL_REFUNDED
+}
+
+model Refund {
+  id              String       @id @default(uuid())
+  paymentId       String
+  payment         Payment      @relation(fields: [paymentId], references: [id])
+  amount          Int // paise
+  status          RefundStatus @default(CREATED)
+  gatewayRefundId String?      @unique // rfnd_xxx
+  reason          String
+  initiatedBy     Role
+  failureReason   String?
+  processedAt     DateTime?
+  createdAt       DateTime     @default(now())
+
+  @@index([paymentId])
+}
+
+enum RefundStatus {
+  CREATED
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+model Cancellation {
+  id           String       @id @default(uuid())
+  bookingId    String       @unique
+  booking      Booking      @relation(fields: [bookingId], references: [id])
+  cancelledBy  Role
+  reason       String
+  policyBucket CancelBucket
+  feeAmount    Int // paise retained
+  refundAmount Int // paise to refund
+  refundId     String?
+  createdAt    DateTime     @default(now())
+}
+
+enum CancelBucket {
+  GRACE_30_MIN
+  FLAT_200
+  PCT_25
+  PCT_50
+  PCT_100
+  NO_SHOW
+}
+
+model WebhookEvent {
+  id              String    @id @default(uuid())
+  gateway         String // razorpay
+  eventId         String    @unique // Razorpay event id (or derived key)
+  eventType       String // payment.captured, etc.
+  signature       String
+  payload         Json
+  processedAt     DateTime?
+  processingError String?
+  receivedAt      DateTime  @default(now())
+
+  @@index([eventType, receivedAt])
+}
+
+model Notification {
+  id        String       @id @default(uuid())
+  bookingId String?
+  booking   Booking?     @relation(fields: [bookingId], references: [id])
+  userId    String?
+  channel   NotifChannel
+  template  String
+  payload   Json
+  status    NotifStatus  @default(QUEUED)
+  attempts  Int          @default(0)
+  lastError String?
+  sentAt    DateTime?
+  createdAt DateTime     @default(now())
+  // ── Phase 6: notification centre (web feed) ──
+  readAt    DateTime?
+  title     String?
+  body      String?
+  link      String?
+
+  @@index([status, createdAt])
+  @@index([userId, createdAt])
+}
+
+enum NotifChannel {
+  SMS
+  EMAIL
+  PUSH
+}
+
+enum NotifStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
+// ── Phase 3: Admin Panel ──────────────────────────────────────────────────
+
+model AdminUser {
+  id             String         @id @default(uuid())
+  email          String         @unique
+  passwordHash   String // argon2id
+  name           String
+  role           AdminRole
+  totpSecret     String? // base32, set on enrolment
+  totpEnabled    Boolean        @default(false)
+  status         AdminStatus    @default(ACTIVE)
+  lastLoginAt    DateTime?
+  failedAttempts Int            @default(0)
+  lockedUntil    DateTime?
+  createdById    String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  sessions       AdminSession[]
+
+  @@index([status])
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  OPS
+  FINANCE
+  SUPPORT
+}
+
+enum AdminStatus {
+  ACTIVE
+  DISABLED
+}
+
+model AdminSession {
+  id         String    @id @default(uuid())
+  userId     String
+  user       AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique // sha256 of opaque session token
+  csrfToken  String
+  ip         String
+  userAgent  String
+  createdAt  DateTime  @default(now())
+  lastSeenAt DateTime  @default(now())
+  expiresAt  DateTime
+  revokedAt  DateTime?
+
+  @@index([userId])
+}
+
+model AdminInvite {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  role        AdminRole
+  tokenHash   String    @unique
+  invitedById String
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model Driver {
+  id           String             @id @default(uuid())
+  userId       String?            @unique
+  user         User?              @relation(fields: [userId], references: [id])
+  name         String
+  phone        String             @unique
+  licenseNo    String
+  homeCity     String
+  cityId       String? // Phase 8: operating city (null = legacy/default city)
+  status       DriverStatus       @default(ONBOARDING)
+  rating       Float?
+  vehicleId    String?
+  vehicle      Vehicle?           @relation(fields: [vehicleId], references: [id])
+  documents    DriverDocument[]
+  notes        DriverNote[]
+  bookings     Booking[]
+  createdById  String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  // ── Phase 4: assignment automation ──
+  availability DriverAvailability @default(OFFLINE)
+  lastSeenAt   DateTime?
+  fcmTokens    DriverFcmToken[]
+  offers       Offer[]
+  attempts     AssignmentAttempt[]
+  offerStats   DriverOfferStats?
+  // ── Phase 5: live tracking ──
+  trips        Trip[]
+  totalTrips   Int                @default(0)
+  lastTripAt   DateTime?
+  // ── Phase 6: rating aggregation ──
+  ratingCount  Int                @default(0)
+  last30Rating Float?
+
+  @@index([status])
+  @@index([homeCity])
+  @@index([availability])
+  @@index([cityId])
+}
+
+enum DriverAvailability {
+  OFFLINE
+  ONLINE
+  BUSY
+}
+
+enum DriverStatus {
+  ONBOARDING
+  ACTIVE
+  SUSPENDED
+  OFFBOARDING
+  DISABLED
+}
+
+model DriverDocument {
+  id           String    @id @default(uuid())
+  driverId     String
+  driver       Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  type         DocType
+  fileKey      String // S3 key
+  fileName     String
+  mimeType     String
+  sizeBytes    Int
+  issuedAt     DateTime?
+  expiresAt    DateTime?
+  verified     Boolean   @default(false)
+  verifiedById String?
+  verifiedAt   DateTime?
+  uploadedById String?
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([driverId, type])
+  @@index([expiresAt])
+}
+
+enum DocType {
+  LICENSE
+  RC
+  INSURANCE
+  PUC
+  PERMIT
+  AADHAAR
+  PAN
+  OTHER
+}
+
+model DriverNote {
+  id        String   @id @default(uuid())
+  driverId  String
+  driver    Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([driverId, createdAt])
+}
+
+model Vehicle {
+  id        String           @id @default(uuid())
+  regNo     String           @unique
+  cityId    String? // Phase 8: city-scoped fleet (null = legacy/default city)
+  category  VehicleCategory
+  model     String
+  capacity  Int
+  ownership VehicleOwnership @default(DRIVER)
+  status    VehicleStatus    @default(ACTIVE)
+  emiPlan   EmiPlan?
+  drivers   Driver[]
+  bookings  Booking[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([category, status])
+  @@index([cityId, status])
+}
+
+enum VehicleOwnership {
+  DRIVER
+  COMPANY
+}
+
+enum VehicleStatus {
+  ACTIVE
+  MAINTENANCE
+  RETIRED
+}
+
+model EmiPlan {
+  id              String   @id @default(uuid())
+  vehicleId       String   @unique
+  vehicle         Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  principalAmount Int // paise
+  monthlyEmi      Int // paise
+  tenureMonths    Int
+  startDate       DateTime
+  lender          String
+  loanRef         String
+  notes           String?
+  createdAt       DateTime @default(now())
+  // ── Phase 6: per-trip cut activation ──
+  driverId          String?
+  perTripCutPaise   BigInt?
+  weeklyTargetPaise BigInt?
+  totalDuePaise     BigInt?
+  collectedPaise    BigInt          @default(0)
+  status            EmiStatus       @default(PAUSED)
+  activatedAt       DateTime?
+  collections       EmiCollection[]
+
+  @@index([driverId, status])
+}
+
+model BookingNote {
+  id        String   @id @default(uuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([bookingId, createdAt])
+}
+
+// ── Phase 4: Assignment Automation & Driver Portal ─────────────────────────
+
+model DriverFcmToken {
+  id         String    @id @default(uuid())
+  driverId   String
+  driver     Driver    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  token      String    @unique
+  userAgent  String?
+  platform   DevicePlatform?
+  appVersion String?
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime  @default(now())
+  revokedAt  DateTime?
+
+  @@index([driverId])
+}
+
+model Offer {
+  id              String      @id @default(uuid())
+  bookingId       String
+  booking         Booking     @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  driverId        String
+  driver          Driver      @relation(fields: [driverId], references: [id])
+  attemptNumber   Int // 1..N within this booking
+  score           Float
+  scoreBreakdown  Json
+  status          OfferStatus @default(OFFERED)
+  offeredAt       DateTime    @default(now())
+  expiresAt       DateTime // offeredAt + TTL
+  respondedAt     DateTime?
+  responseReason  String?
+  notificationIds String[]
+
+  @@unique([bookingId, driverId, attemptNumber])
+  @@index([bookingId, status])
+  @@index([driverId, status])
+  @@index([expiresAt, status])
+}
+
+enum OfferStatus {
+  OFFERED
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  CANCELLED
+}
+
+model AssignmentAttempt {
+  id            String         @id @default(uuid())
+  bookingId     String
+  booking       Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  driverId      String?
+  driver        Driver?        @relation(fields: [driverId], references: [id])
+  attemptNumber Int
+  triggeredAt   DateTime       @default(now())
+  candidatePool Json // [{ driverId, score, breakdown }]
+  outcome       AttemptOutcome
+  reason        String?
+  jobId         String? // BullMQ job id for trace
+
+  @@unique([bookingId, attemptNumber])
+  @@index([bookingId])
+}
+
+enum AttemptOutcome {
+  POOL_EMPTY
+  OFFER_SENT
+  ALL_DECLINED
+  ACCEPTED
+  ABORTED
+}
+
+model DriverOfferStats {
+  driverId       String   @id
+  driver         Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  offersTotal    Int      @default(0)
+  offersAccepted Int      @default(0)
+  offersDeclined Int      @default(0)
+  offersExpired  Int      @default(0)
+  acceptanceRate Float    @default(0)
+  avgResponseSec Float    @default(0)
+  updatedAt      DateTime @updatedAt
+}
+
+model SystemAlert {
+  id         String        @id @default(uuid())
+  type       AlertType
+  severity   AlertSeverity @default(WARNING)
+  entityType String?
+  entityId   String?
+  payload    Json
+  status     AlertStatus   @default(OPEN)
+  ackedById  String?
+  ackedAt    DateTime?
+  resolvedAt DateTime?
+  createdAt  DateTime      @default(now())
+
+  @@index([status, createdAt])
+  @@index([type, status])
+}
+
+enum AlertType {
+  UNASSIGNED_T_MINUS_30
+  POOL_EMPTY
+  DRIVER_NO_SHOW
+  REFUND_STUCK
+  DOC_EXPIRY
+  WEBHOOK_DLQ
+  SOS_TRIGGERED
+  TRIP_FRAUD_REVIEW
+  TRIP_STALE
+  LOW_RATING
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+enum AlertStatus {
+  OPEN
+  ACKED
+  RESOLVED
+}
+
+// ── Phase 5: Live Tracking ─────────────────────────────────────────────────
+
+model Trip {
+  id               String           @id @default(uuid())
+  bookingId        String           @unique
+  booking          Booking          @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  driverId         String
+  driver           Driver           @relation(fields: [driverId], references: [id])
+  vehicleId        String
+  startLat         Float?
+  startLng         Float?
+  endLat           Float?
+  endLng           Float?
+  pickupReachedLat Float?
+  pickupReachedLng Float?
+  totalKm          Float?
+  totalMin         Int?
+  topSpeedKmh      Float?
+  avgSpeedKmh      Float?
+  pingCount        Int              @default(0)
+  gapCount         Int              @default(0)
+  fraudScore       Float?
+  fraudFlags       Json?
+  reviewStatus     TripReviewStatus @default(NONE)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([driverId, createdAt])
+}
+
+enum TripReviewStatus {
+  NONE
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+model SosEvent {
+  id          String    @id @default(uuid())
+  bookingId   String
+  booking     Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  triggeredBy SosActor
+  lat         Float?
+  lng         Float?
+  message     String?
+  alertId     String?
+  ackedById   String?
+  ackedAt     DateTime?
+  resolvedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([bookingId, createdAt])
+}
+
+enum SosActor {
+  PASSENGER
+  DRIVER
+  ADMIN
+}
+
+model TrackToken {
+  id        String    @id @default(uuid())
+  bookingId String
+  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([bookingId])
+}
+
+// ── Phase 6: Intelligence Layer ────────────────────────────────────────────
+// Track A — Dynamic Pricing
+
+model SurgeRule {
+  id             String   @id @default(uuid())
+  cityId         String? // Phase 8: city-scoped surge (null = legacy/default city)
+  routeBucket    String // "CHD-DEL", "CHD-LOCAL", ...
+  capMultiplier  Float    @default(1.8)
+  timeFloors     Json // [{ dayType, hourBand, floor }]
+  blackout       Boolean  @default(false)
+  version        Int
+  supersededById String?
+  createdById    String
+  createdAt      DateTime @default(now())
+
+  @@index([routeBucket, version])
+  @@index([cityId, routeBucket, version])
+}
+
+model SurgeOverride {
+  id          String   @id @default(uuid())
+  routeBucket String
+  multiplier  Float
+  startsAt    DateTime
+  endsAt      DateTime
+  reason      String
+  createdById String
+  createdAt   DateTime @default(now())
+
+  @@index([routeBucket, startsAt, endsAt])
+}
+
+// Track C — Money: double-entry ledger
+
+model LedgerAccount {
+  id        String            @id @default(uuid())
+  type      LedgerAccountType
+  ownerId   String? // userId / driverId / null for platform
+  currency  String            @default("INR")
+  entries   LedgerEntry[]
+  createdAt DateTime          @default(now())
+
+  @@unique([type, ownerId])
+}
+
+enum LedgerAccountType {
+  CUSTOMER_WALLET
+  DRIVER_PAYABLE
+  EMI_RECEIVABLE
+  PLATFORM_REVENUE
+  PLATFORM_CASH
+  PROMO_LIABILITY
+}
+
+model LedgerEntry {
+  id          String         @id @default(uuid())
+  txnId       String // groups the balanced legs
+  accountId   String
+  account     LedgerAccount  @relation(fields: [accountId], references: [id])
+  direction   LedgerDirection
+  amountPaise BigInt
+  refType     String // "booking" | "refund" | "referral" | "emi" | "payout" | "goodwill"
+  refId       String
+  memo        String?
+  createdAt   DateTime       @default(now())
+
+  @@index([accountId, createdAt])
+  @@index([txnId])
+  @@index([refType, refId])
+}
+
+enum LedgerDirection {
+  DEBIT
+  CREDIT
+}
+
+model WalletHold {
+  id          String           @id @default(uuid())
+  userId      String
+  amountPaise BigInt
+  bookingId   String
+  status      WalletHoldStatus @default(HELD)
+  expiresAt   DateTime
+  createdAt   DateTime         @default(now())
+
+  @@index([userId, status])
+  @@index([bookingId])
+}
+
+enum WalletHoldStatus {
+  HELD
+  COMMITTED
+  RELEASED
+}
+
+model EmiCollection {
+  id          String              @id @default(uuid())
+  emiPlanId   String
+  emiPlan     EmiPlan             @relation(fields: [emiPlanId], references: [id], onDelete: Cascade)
+  bookingId   String? // null for manual/bulk collection
+  amountPaise BigInt
+  source      EmiCollectionSource
+  collectedAt DateTime            @default(now())
+
+  @@index([emiPlanId, collectedAt])
+}
+
+enum EmiCollectionSource {
+  PER_TRIP
+  MANUAL
+  ADJUSTMENT
+}
+
+enum EmiStatus {
+  ACTIVE
+  COMPLETED
+  DEFAULTED
+  PAUSED
+}
+
+model Payout {
+  id          String   @id @default(uuid())
+  driverId    String
+  amountPaise BigInt
+  method      String // "bank_transfer_manual"
+  reference   String   @unique // UTR / txn ref entered by finance
+  periodStart DateTime
+  periodEnd   DateTime
+  createdById String
+  createdAt   DateTime @default(now())
+
+  @@index([driverId, createdAt])
+}
+
+// Track D — Engagement: referrals, reviews
+
+model Referral {
+  id             String         @id @default(uuid())
+  referrerId     String
+  refereeId      String         @unique
+  code           String
+  status         ReferralStatus @default(PENDING)
+  rewardTxnId    String?
+  rejectedReason String?
+  deviceHash     String?
+  createdAt      DateTime       @default(now())
+  rewardedAt     DateTime?
+
+  @@index([referrerId, status])
+  @@index([code])
+}
+
+enum ReferralStatus {
+  PENDING
+  REWARDED
+  REJECTED
+}
+
+model Review {
+  id        String          @id @default(uuid())
+  bookingId String
+  direction ReviewDirection
+  raterId   String
+  rateeId   String
+  stars     Int // 1..5
+  tags      String[]
+  text      String?
+  hidden    Boolean         @default(false)
+  createdAt DateTime        @default(now())
+
+  @@unique([bookingId, direction])
+  @@index([rateeId, createdAt])
+}
+
+enum ReviewDirection {
+  CUSTOMER_TO_DRIVER
+  DRIVER_TO_CUSTOMER
+}
+
+// Track B — Analytics rollups
+
+model DailyMetric {
+  id             String   @id @default(uuid())
+  date           DateTime @db.Date
+  cityId         String? // Phase 8: city-scoped rollups (null = global/all-cities)
+  dimension      String // "global" | "route:CHD-DEL" | "vehicle:SEDAN"
+  trips          Int      @default(0)
+  gmvPaise       BigInt   @default(0)
+  aovPaise       BigInt   @default(0)
+  quotes         Int      @default(0)
+  bookings       Int      @default(0)
+  cancellations  Int      @default(0)
+  noShows        Int      @default(0)
+  refundsPaise   BigInt   @default(0)
+  surgeTripCount Int      @default(0)
+  avgSurge       Float    @default(1.0)
+  driverActive   Int      @default(0)
+  acceptanceRate Float    @default(0)
+  utilization    Float    @default(0)
+  createdAt      DateTime @default(now())
+
+  @@unique([date, dimension])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 7 — Mobile Apps (additive)
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum DevicePlatform {
+  ANDROID
+  IOS
+}
+
+// Customer push tokens (mirrors DriverFcmToken; FCM for Android, APNs-via-FCM for iOS).
+model DeviceToken {
+  id         String         @id @default(uuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String         @unique
+  platform   DevicePlatform
+  appVersion String
+  lastSeenAt DateTime       @default(now())
+  createdAt  DateTime       @default(now())
+  revokedAt  DateTime?
+
+  @@index([userId])
+}
+
+// Masked-call audit (Exotel bridge). Detail of each leg lives in Mongo call_logs.
+model CallLog {
+  id          String   @id @default(uuid())
+  bookingId   String
+  fromRole    String // "PASSENGER" | "DRIVER"
+  exotelSid   String?
+  status      String // initiated | ringing | completed | failed
+  durationSec Int?
+  createdAt   DateTime @default(now())
+
+  @@index([bookingId])
+}
+
+// Per-app/platform version gate for force-update + maintenance mode.
+model AppVersionPolicy {
+  id           String         @id @default(uuid())
+  platform     DevicePlatform
+  app          String // "passenger" | "driver"
+  minSupported String // semver; below -> force update
+  latest       String
+  maintenance  Boolean        @default(false)
+  message      String?
+  updatedAt    DateTime       @updatedAt
+  createdAt    DateTime       @default(now())
+
+  @@unique([platform, app])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Phase 8 — Workstream B: Multi-City (additive; cityId is nullable for backfill)
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum CityStatus {
+  PLANNED
+  LIVE
+  PAUSED
+}
+
+model City {
+  id         String     @id @default(uuid())
+  code       String     @unique // "CHD", "LDH", "ASR"
+  name       String
+  timezone   String     @default("Asia/Kolkata")
+  centerLat  Float
+  centerLng  Float
+  status     CityStatus @default(PLANNED)
+  launchedAt DateTime?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  zones      Zone[]
+
+  @@index([status])
+}
+
+model Zone {
+  id        String   @id @default(uuid())
+  cityId    String
+  city      City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  code      String
+  name      String
+  polygon   Json // GeoJSON Polygon coordinates: number[][][]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cityId, code])
+  @@index([cityId])
+}

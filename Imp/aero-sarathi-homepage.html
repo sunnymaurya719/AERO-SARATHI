@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aero Sarathi – Your Journey Our Mission</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --orange: #F48024;
+    --orange-dark: #d96a10;
+    --orange-light: #fef0e3;
+    --navy: #1E2D5A;
+    --navy-dark: #131d3d;
+    --navy-mid: #2d4178;
+    --white: #ffffff;
+    --off-white: #f8f7f4;
+    --gray-light: #f0ede8;
+    --gray-mid: #c8c4bc;
+    --gray-text: #6b6760;
+    --font-display: 'Outfit', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--white);
+    color: var(--navy);
+    overflow-x: hidden;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 72px;
+    background: rgba(30, 45, 90, 0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(244,128,36,0.15);
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-display);
+    font-size: 24px; font-weight: 700;
+    color: var(--white); letter-spacing: 1px;
+  }
+  .nav-logo span { color: var(--orange); }
+
+  .nav-logo-icon {
+    width: 36px; height: 36px;
+    background: var(--orange);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .nav-logo-icon svg { transform: rotate(45deg); }
+
+  .nav-links {
+    display: flex; align-items: center; gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 14px; font-weight: 400;
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--orange); }
+
+  .nav-cta {
+    background: var(--orange);
+    color: var(--white) !important;
+    padding: 9px 22px;
+    border-radius: 6px;
+    font-weight: 500 !important;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--orange-dark) !important; color: var(--white) !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background: var(--navy-dark);
+    position: relative;
+    display: flex; align-items: center;
+    overflow: hidden;
+    padding-top: 72px;
+  }
+
+  .hero-bg-pattern {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 70% 50%, rgba(244,128,36,0.12) 0%, transparent 60%),
+      radial-gradient(circle at 20% 80%, rgba(244,128,36,0.06) 0%, transparent 40%),
+      linear-gradient(135deg, #131d3d 0%, #1e2d5a 50%, #0d1628 100%);
+  }
+
+  .hero-grid-lines {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero-diagonal {
+    position: absolute; right: 0; top: 0; bottom: 0;
+    width: 55%;
+    background: rgba(244,128,36,0.04);
+    clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    width: 100%; max-width: 1200px;
+    margin: 0 auto; padding: 0 48px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center;
+  }
+
+  .hero-left { padding-top: 20px; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(244,128,36,0.15);
+    border: 1px solid rgba(244,128,36,0.3);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px; font-weight: 500;
+    color: var(--orange);
+    letter-spacing: 0.8px; text-transform: uppercase;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--orange);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 5vw, 68px);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.05;
+    letter-spacing: -0.5px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero-title .highlight {
+    color: var(--orange);
+    position: relative;
+    display: inline-block;
+  }
+  .hero-title .highlight::after {
+    content: '';
+    position: absolute; bottom: 4px; left: 0; right: 0;
+    height: 3px;
+    background: var(--orange);
+    opacity: 0.4;
+    border-radius: 2px;
+  }
+
+  .hero-sub {
+    font-size: 16px; font-weight: 300;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.7;
+    max-width: 440px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-stats {
+    display: flex; gap: 32px;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .stat-item {}
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 32px; font-weight: 700;
+    color: var(--orange);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 12px; color: rgba(255,255,255,0.5);
+    margin-top: 4px; letter-spacing: 0.3px;
+  }
+  .stat-divider {
+    width: 1px; background: rgba(255,255,255,0.1);
+    align-self: stretch;
+  }
+
+  /* ── BOOKING CARD ── */
+  .booking-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+    animation: fadeUp 0.6s 0.15s ease both;
+  }
+
+  .booking-tabs {
+    display: flex; gap: 0;
+    background: var(--gray-light);
+    border-radius: 10px; padding: 4px;
+    margin-bottom: 24px;
+  }
+  .tab-btn {
+    flex: 1; padding: 10px 8px;
+    border: none; border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    background: transparent; color: var(--gray-text);
+  }
+  .tab-btn.active {
+    background: var(--white);
+    color: var(--navy);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .booking-form { display: flex; flex-direction: column; gap: 14px; }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label {
+    font-size: 11px; font-weight: 500;
+    color: var(--gray-text); text-transform: uppercase; letter-spacing: 0.6px;
+  }
+
+  .input-wrap {
+    position: relative; display: flex; align-items: center;
+  }
+  .input-icon {
+    position: absolute; left: 14px;
+    color: var(--orange); font-size: 16px;
+    pointer-events: none;
+  }
+  .form-input {
+    width: 100%; padding: 12px 14px 12px 40px;
+    border: 1.5px solid #e8e4de;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 14px; color: var(--navy);
+    background: var(--off-white);
+    outline: none; transition: border-color 0.2s, background 0.2s;
+    appearance: none;
+  }
+  .form-input:focus {
+    border-color: var(--orange);
+    background: var(--white);
+  }
+  .form-input::placeholder { color: #aaa7a0; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .vehicle-select-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  }
+  .vehicle-opt {
+    border: 1.5px solid #e8e4de;
+    border-radius: 10px; padding: 10px 8px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s; background: var(--off-white);
+  }
+  .vehicle-opt:hover { border-color: var(--orange); background: var(--orange-light); }
+  .vehicle-opt.selected { border-color: var(--orange); background: var(--orange-light); }
+  .vehicle-opt-icon { font-size: 20px; margin-bottom: 4px; }
+  .vehicle-opt-label { font-size: 11px; font-weight: 500; color: var(--navy); }
+  .vehicle-opt-price { font-size: 10px; color: var(--gray-text); margin-top: 2px; }
+
+  .book-btn {
+    width: 100%; padding: 15px;
+    background: var(--orange);
+    color: var(--white);
+    border: none; border-radius: 12px;
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer; transition: all 0.2s;
+    position: relative; overflow: hidden;
+    margin-top: 4px;
+  }
+  .book-btn::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+  .book-btn:hover { background: var(--orange-dark); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(244,128,36,0.35); }
+  .book-btn:hover::after { transform: translateX(100%); }
+
+  .secure-note {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-size: 11px; color: var(--gray-text); margin-top: 12px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── ROUTES STRIP ── */
+  .routes-strip {
+    background: var(--orange);
+    padding: 16px 48px;
+    overflow: hidden;
+  }
+  .routes-marquee {
+    display: flex; gap: 48px;
+    animation: marquee 20s linear infinite;
+    width: max-content;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .route-pill {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-display);
+    font-size: 15px; font-weight: 600;
+    color: var(--white); white-space: nowrap; letter-spacing: 0.3px;
+  }
+  .route-arrow { color: rgba(255,255,255,0.6); }
+
+  /* ── SECTION COMMONS ── */
+  section { padding: 96px 48px; }
+  .section-inner { max-width: 1200px; margin: 0 auto; }
+
+  .section-tag {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--orange); margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700; line-height: 1.1;
+    color: var(--navy); margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 16px; font-weight: 300;
+    color: var(--gray-text); max-width: 520px; line-height: 1.7;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how-section { background: var(--off-white); }
+
+  .steps-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 0; margin-top: 60px;
+    position: relative;
+  }
+  .steps-grid::before {
+    content: '';
+    position: absolute; top: 32px; left: 10%; right: 10%;
+    height: 1px; background: linear-gradient(90deg, transparent, var(--orange), var(--orange), transparent);
+    opacity: 0.3;
+  }
+
+  .step-card {
+    padding: 0 24px; text-align: center; position: relative;
+  }
+  .step-num {
+    width: 64px; height: 64px;
+    background: var(--white);
+    border: 2px solid var(--orange);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-family: var(--font-display);
+    font-size: 24px; font-weight: 700;
+    color: var(--orange);
+    position: relative; z-index: 1;
+    box-shadow: 0 4px 20px rgba(244,128,36,0.15);
+  }
+  .step-icon { font-size: 28px; }
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 600;
+    color: var(--navy); margin-bottom: 10px;
+  }
+  .step-desc { font-size: 13px; color: var(--gray-text); line-height: 1.6; }
+
+  /* ── ROUTES ── */
+  .routes-section { background: var(--white); }
+
+  .routes-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; }
+  .view-all-link {
+    color: var(--orange); font-size: 14px; font-weight: 500;
+    text-decoration: none; display: flex; align-items: center; gap: 4px;
+  }
+
+  .routes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+  .route-card {
+    border-radius: 16px; overflow: hidden;
+    position: relative; cursor: pointer;
+    background: var(--navy);
+    transition: transform 0.3s, box-shadow 0.3s;
+    aspect-ratio: 4/3;
+  }
+  .route-card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(30,45,90,0.25); }
+  .route-card:first-child { grid-column: span 2; aspect-ratio: 16/9; }
+
+  .route-card-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: transform 0.4s;
+    opacity: 0.5;
+  }
+  .route-card:hover .route-card-bg { transform: scale(1.05); }
+
+  .route-card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(19,29,61,0.8) 0%, rgba(244,128,36,0.3) 100%);
+  }
+
+  .route-card-content {
+    position: relative; z-index: 1;
+    padding: 24px; height: 100%;
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+
+  .route-distance-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(244,128,36,0.2); border: 1px solid rgba(244,128,36,0.4);
+    border-radius: 20px; padding: 4px 10px;
+    font-size: 11px; font-weight: 500; color: var(--orange);
+    margin-bottom: 10px; width: fit-content;
+  }
+
+  .route-card-from-to {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 700;
+    color: var(--white); line-height: 1.2; margin-bottom: 8px;
+  }
+  .route-card-from-to span { color: rgba(255,255,255,0.5); margin: 0 6px; }
+
+  .route-card-meta {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .route-price { font-family: var(--font-display); font-size: 18px; font-weight: 600; color: var(--orange); }
+  .route-time { font-size: 12px; color: rgba(255,255,255,0.6); }
+
+  /* BG patterns for route cards */
+  .bg-chandigarh { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%231e2d5a' width='400' height='300'/%3E%3Ccircle cx='200' cy='180' r='120' fill='none' stroke='%23F48024' stroke-width='40' opacity='0.15'/%3E%3Ccircle cx='200' cy='180' r='60' fill='%23F48024' opacity='0.1'/%3E%3Cpath d='M0,200 Q100,160 200,170 T400,160 L400,300 L0,300Z' fill='%23131d3d' opacity='0.8'/%3E%3C/svg%3E"); }
+  .bg-amritsar { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23131d3d' width='400' height='300'/%3E%3Crect x='150' y='80' width='100' height='100' rx='8' fill='none' stroke='%23F48024' stroke-width='3' opacity='0.3'/%3E%3Crect x='170' y='100' width='60' height='60' fill='%23F48024' opacity='0.1'/%3E%3Cpath d='M0,220 Q200,180 400,200 L400,300 L0,300Z' fill='%23F48024' opacity='0.08'/%3E%3C/svg%3E"); }
+  .bg-delhi { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='300'%3E%3Crect fill='%23131d3d' width='600' height='300'/%3E%3Cellipse cx='300' cy='280' rx='250' ry='80' fill='%231e2d5a'/%3E%3Cpath d='M220,280 L240,180 L280,280' fill='%23F48024' opacity='0.15'/%3E%3Cpath d='M300,280 L320,160 L340,280' fill='%23F48024' opacity='0.1'/%3E%3Cpath d='M360,280 L380,200 L400,280' fill='%23F48024' opacity='0.12'/%3E%3Ccircle cx='480' cy='80' r='30' fill='none' stroke='%23F48024' stroke-width='2' opacity='0.2'/%3E%3Cpath d='M440,80 L520,80 M480,40 L480,120' stroke='%23F48024' stroke-width='1.5' opacity='0.15'/%3E%3C/svg%3E"); }
+
+  /* ── VEHICLES ── */
+  .vehicles-section { background: var(--navy-dark); }
+  .vehicles-section .section-title { color: var(--white); }
+  .vehicles-section .section-sub { color: rgba(255,255,255,0.5); }
+  .vehicles-section .section-tag { color: var(--orange); }
+
+  .vehicles-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 52px; }
+
+  .vehicle-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 28px 20px;
+    text-align: center;
+    transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden;
+  }
+  .vehicle-card::before {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: var(--orange); transform: scaleX(0); transition: transform 0.3s;
+  }
+  .vehicle-card:hover { background: rgba(244,128,36,0.08); border-color: rgba(244,128,36,0.3); transform: translateY(-4px); }
+  .vehicle-card:hover::before { transform: scaleX(1); }
+
+  .vehicle-emoji { font-size: 44px; margin-bottom: 16px; display: block; }
+  .vehicle-name {
+    font-family: var(--font-display); font-size: 18px; font-weight: 600;
+    color: var(--white); margin-bottom: 8px;
+  }
+  .vehicle-desc { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5; margin-bottom: 16px; }
+  .vehicle-rate {
+    font-family: var(--font-display); font-size: 20px; font-weight: 700;
+    color: var(--orange);
+  }
+  .vehicle-rate-sub { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+  .vehicle-tag {
+    display: inline-block; padding: 3px 10px;
+    background: rgba(244,128,36,0.15); border-radius: 20px;
+    font-size: 10px; font-weight: 600; color: var(--orange);
+    letter-spacing: 0.5px; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* ── WHY US ── */
+  .why-section { background: var(--white); }
+
+  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; margin-top: 0; }
+  .why-left { padding-top: 0; }
+  .why-features { margin-top: 48px; display: flex; flex-direction: column; gap: 28px; }
+
+  .why-feat {
+    display: flex; gap: 20px; align-items: flex-start;
+    padding: 20px; border-radius: 12px;
+    transition: background 0.2s; cursor: default;
+  }
+  .why-feat:hover { background: var(--off-white); }
+
+  .feat-icon-wrap {
+    width: 48px; height: 48px; flex-shrink: 0;
+    background: var(--orange-light);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    border: 1px solid rgba(244,128,36,0.2);
+  }
+  .feat-title {
+    font-family: var(--font-display); font-size: 17px; font-weight: 600;
+    color: var(--navy); margin-bottom: 6px;
+  }
+  .feat-desc { font-size: 13px; color: var(--gray-text); line-height: 1.6; }
+
+  .why-visual {
+    position: relative;
+  }
+  .why-big-card {
+    background: var(--navy);
+    border-radius: 20px; padding: 40px;
+    position: relative; overflow: hidden;
+  }
+  .why-big-card::before {
+    content: '';
+    position: absolute; top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: var(--orange); opacity: 0.08;
+    border-radius: 50%;
+  }
+  .why-big-card::after {
+    content: '';
+    position: absolute; bottom: -60px; left: -30px;
+    width: 160px; height: 160px;
+    background: var(--orange); opacity: 0.05;
+    border-radius: 50%;
+  }
+
+  .live-tracker-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--orange); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .live-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: pulse 1.5s infinite; }
+
+  .trip-card-inner {
+    background: rgba(255,255,255,0.06); border-radius: 14px; padding: 20px; margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .trip-route-display {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+  }
+  .trip-city {
+    font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--white);
+  }
+  .trip-city-sub { font-size: 11px; color: rgba(255,255,255,0.4); }
+  .trip-arrow-wrap { flex: 1; display: flex; align-items: center; gap: 0; }
+  .trip-line { flex: 1; height: 1px; background: rgba(244,128,36,0.3); }
+  .trip-plane { font-size: 18px; padding: 0 4px; }
+
+  .trip-meta-row { display: flex; gap: 16px; }
+  .trip-meta-item { }
+  .trip-meta-val {
+    font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--orange);
+  }
+  .trip-meta-key { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+  .driver-card-inner {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(255,255,255,0.04); border-radius: 12px; padding: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .driver-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 18px; font-weight: 700; color: white;
+    flex-shrink: 0;
+  }
+  .driver-name { font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 3px; }
+  .driver-rating { font-size: 12px; color: rgba(255,255,255,0.5); }
+  .driver-rating span { color: #fbbf24; }
+  .driver-status {
+    margin-left: auto; padding: 4px 10px;
+    background: rgba(34,197,94,0.15); border-radius: 20px;
+    font-size: 11px; font-weight: 500; color: #22c55e;
+  }
+
+  .float-badge {
+    position: absolute; top: -16px; right: -20px;
+    background: var(--orange); color: white;
+    border-radius: 12px; padding: 12px 18px;
+    box-shadow: 0 8px 24px rgba(244,128,36,0.4);
+  }
+  .float-badge-num {
+    font-family: var(--font-display); font-size: 28px; font-weight: 700; line-height: 1;
+  }
+  .float-badge-label { font-size: 10px; opacity: 0.85; margin-top: 2px; }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-section { background: var(--off-white); }
+
+  .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 52px; }
+
+  .testi-card {
+    background: var(--white); border-radius: 16px; padding: 28px;
+    border: 1px solid rgba(0,0,0,0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .testi-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.1); }
+
+  .testi-stars { color: var(--orange); font-size: 14px; margin-bottom: 16px; letter-spacing: 2px; }
+  .testi-text { font-size: 14px; color: var(--gray-text); line-height: 1.7; margin-bottom: 20px; font-style: italic; }
+  .testi-author { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--navy); display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--orange);
+    flex-shrink: 0;
+  }
+  .testi-name { font-size: 14px; font-weight: 500; color: var(--navy); }
+  .testi-route { font-size: 11px; color: var(--gray-text); margin-top: 2px; }
+
+  /* ── CTA STRIP ── */
+  .cta-section {
+    background: var(--orange);
+    padding: 80px 48px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute; top: -80px; left: -80px;
+    width: 300px; height: 300px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  .cta-section::after {
+    content: '';
+    position: absolute; bottom: -60px; right: -60px;
+    width: 240px; height: 240px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .cta-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+  .cta-title {
+    font-family: var(--font-display); font-size: clamp(32px, 4vw, 52px); font-weight: 700;
+    color: var(--white); line-height: 1.1; margin-bottom: 16px;
+  }
+  .cta-sub { font-size: 16px; color: rgba(255,255,255,0.8); margin-bottom: 36px; line-height: 1.6; }
+  .cta-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--white); color: var(--orange);
+    padding: 16px 36px; border-radius: 12px;
+    font-family: var(--font-display); font-size: 18px; font-weight: 700;
+    text-decoration: none; letter-spacing: 0.3px;
+    transition: all 0.2s;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+  .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 16px 48px rgba(0,0,0,0.2); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy-dark);
+    padding: 64px 48px 32px;
+    color: rgba(255,255,255,0.5);
+  }
+  .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+
+  .footer-brand-name {
+    font-family: var(--font-display); font-size: 28px; font-weight: 700;
+    color: var(--white); letter-spacing: 1px; margin-bottom: 8px;
+  }
+  .footer-brand-name span { color: var(--orange); }
+  .footer-tagline { font-size: 12px; color: var(--orange); letter-spacing: 1px; margin-bottom: 16px; }
+  .footer-desc { font-size: 13px; line-height: 1.7; max-width: 260px; }
+
+  .footer-col-title {
+    font-family: var(--font-display); font-size: 15px; font-weight: 600;
+    color: var(--white); margin-bottom: 20px; letter-spacing: 0.3px;
+  }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-links a { color: rgba(255,255,255,0.45); font-size: 13px; text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--orange); }
+
+  .footer-bottom {
+    max-width: 1200px; margin: 0 auto;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px;
+  }
+  .footer-bottom-links { display: flex; gap: 20px; }
+  .footer-bottom-links a { color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.2s; }
+  .footer-bottom-links a:hover { color: var(--orange); }
+
+  /* ── TRUST STRIP ── */
+  .trust-strip { background: var(--white); padding: 32px 48px; border-top: 1px solid var(--gray-light); border-bottom: 1px solid var(--gray-light); }
+  .trust-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-around; gap: 32px; }
+  .trust-item { display: flex; align-items: center; gap: 10px; }
+  .trust-icon { font-size: 24px; }
+  .trust-text { font-size: 13px; font-weight: 500; color: var(--navy); }
+  .trust-divider { width: 1px; height: 30px; background: var(--gray-light); }
+
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8 2L14 6L14 14L8 12L2 14L2 6L8 2Z" fill="white" opacity="0.9"/>
+      </svg>
+    </div>
+    AERO <span>SARATHI</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#routes">Routes</a></li>
+    <li><a href="#vehicles">Vehicles</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#why">Why Us</a></li>
+    <li><a href="#book" class="nav-cta">Book Now</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="book">
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-grid-lines"></div>
+  <div class="hero-diagonal"></div>
+
+  <div class="hero-content">
+    <!-- Left -->
+    <div class="hero-left">
+      <div class="hero-badge">Punjab's Trusted Airport Taxi</div>
+      <h1 class="hero-title">
+        Your Journey,<br>
+        Our <span class="highlight">Mission</span>
+      </h1>
+      <p class="hero-sub">
+        Pre-book intercity taxis, airport transfers, and outstation rides across Punjab. Fixed fares, professional drivers, zero surprises.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">500+</div>
+          <div class="stat-label">Happy Riders</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">15+</div>
+          <div class="stat-label">Cities Covered</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">4.8★</div>
+          <div class="stat-label">Avg Rating</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Card -->
+    <div class="booking-card">
+      <div class="booking-tabs">
+        <button class="tab-btn active" onclick="setTab(this, 'outstation')">✈ Airport</button>
+        <button class="tab-btn" onclick="setTab(this, 'intercity')">🏙 Intercity</button>
+        <button class="tab-btn" onclick="setTab(this, 'local')">📍 Local</button>
+      </div>
+
+      <div class="booking-form">
+        <div class="form-group">
+          <label class="form-label">Pickup Location</label>
+          <div class="input-wrap">
+            <span class="input-icon">📍</span>
+            <input class="form-input" type="text" placeholder="Enter pickup city or address">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Drop Location</label>
+          <div class="input-wrap">
+            <span class="input-icon">🏁</span>
+            <input class="form-input" type="text" placeholder="Enter destination or airport">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Travel Date</label>
+            <div class="input-wrap">
+              <span class="input-icon">📅</span>
+              <input class="form-input" type="date" style="padding-left: 40px;">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Pickup Time</label>
+            <div class="input-wrap">
+              <span class="input-icon">🕐</span>
+              <input class="form-input" type="time" style="padding-left: 40px;">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Choose Vehicle</label>
+          <div class="vehicle-select-grid">
+            <div class="vehicle-opt selected" onclick="selectVehicle(this)">
+              <div class="vehicle-opt-icon">🚗</div>
+              <div class="vehicle-opt-label">Sedan</div>
+              <div class="vehicle-opt-price">From ₹2,000</div>
+            </div>
+            <div class="vehicle-opt" onclick="selectVehicle(this)">
+              <div class="vehicle-opt-icon">🚙</div>
+              <div class="vehicle-opt-label">SUV</div>
+              <div class="vehicle-opt-price">From ₹3,000</div>
+            </div>
+            <div class="vehicle-opt" onclick="selectVehicle(this)">
+              <div class="vehicle-opt-icon">🚐</div>
+              <div class="vehicle-opt-label">Tempo</div>
+              <div class="vehicle-opt-price">From ₹4,500</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="book-btn">Search & Book Ride →</button>
+
+        <div class="secure-note">
+          🔒 Secure booking &nbsp;·&nbsp; ₹0 cancellation within 30 min &nbsp;·&nbsp; Fixed fares
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROUTES MARQUEE STRIP -->
+<div class="routes-strip">
+  <div class="routes-marquee">
+    <div class="route-pill">Ludhiana <span class="route-arrow">→</span> Delhi Airport</div>
+    <div class="route-pill">Chandigarh <span class="route-arrow">→</span> Delhi Airport</div>
+    <div class="route-pill">Amritsar <span class="route-arrow">→</span> Delhi Airport</div>
+    <div class="route-pill">Patiala <span class="route-arrow">→</span> Chandigarh</div>
+    <div class="route-pill">Jalandhar <span class="route-arrow">→</span> Delhi</div>
+    <div class="route-pill">Mohali <span class="route-arrow">→</span> Ambala</div>
+    <div class="route-pill">Ludhiana <span class="route-arrow">→</span> Delhi Airport</div>
+    <div class="route-pill">Chandigarh <span class="route-arrow">→</span> Delhi Airport</div>
+    <div class="route-pill">Amritsar <span class="route-arrow">→</span> Delhi Airport</div>
+    <div class="route-pill">Patiala <span class="route-arrow">→</span> Chandigarh</div>
+    <div class="route-pill">Jalandhar <span class="route-arrow">→</span> Delhi</div>
+    <div class="route-pill">Mohali <span class="route-arrow">→</span> Ambala</div>
+  </div>
+</div>
+
+<!-- TRUST STRIP -->
+<div class="trust-strip">
+  <div class="trust-inner">
+    <div class="trust-item">
+      <span class="trust-icon">✅</span>
+      <span class="trust-text">Verified Drivers</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-icon">💳</span>
+      <span class="trust-text">Secure Online Payment</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-icon">🕐</span>
+      <span class="trust-text">24/7 Support</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-icon">📍</span>
+      <span class="trust-text">Live GPS Tracking</span>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <span class="trust-icon">💰</span>
+      <span class="trust-text">No Hidden Charges</span>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="section-inner">
+    <div class="section-tag">Simple Process</div>
+    <h2 class="section-title">Book in 4 Easy Steps</h2>
+    <p class="section-sub">Pre-book your ride, get a confirmed driver, and travel stress-free across Punjab.</p>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num"><span class="step-icon">🗺</span></div>
+        <div class="step-title">Enter Route</div>
+        <p class="step-desc">Enter your pickup city, destination, date and time. Get instant fare estimate.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num"><span class="step-icon">🚗</span></div>
+        <div class="step-title">Choose Vehicle</div>
+        <p class="step-desc">Pick from Sedan, SUV, or Tempo Traveller based on your group size and budget.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num"><span class="step-icon">💳</span></div>
+        <div class="step-title">Pay Token</div>
+        <p class="step-desc">Secure your booking with a small advance. Rest paid directly to the driver.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num"><span class="step-icon">✅</span></div>
+        <div class="step-title">Ride Confirmed</div>
+        <p class="step-desc">Driver assigned 3 hours before trip. Get SMS with driver details and live tracking link.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POPULAR ROUTES -->
+<section class="routes-section" id="routes">
+  <div class="section-inner">
+    <div class="routes-header">
+      <div>
+        <div class="section-tag">Top Routes</div>
+        <h2 class="section-title">Popular Destinations</h2>
+      </div>
+      <a href="#" class="view-all-link">View All Routes →</a>
+    </div>
+
+    <div class="routes-grid">
+      <div class="route-card" style="grid-column: span 2; aspect-ratio: 16/9;">
+        <div class="route-card-bg bg-delhi"></div>
+        <div class="route-card-overlay"></div>
+        <div class="route-card-content">
+          <div class="route-distance-badge">✈ ~310 km</div>
+          <div class="route-from-to route-card-from-to">Chandigarh <span>→</span> Delhi Airport</div>
+          <div class="route-card-meta">
+            <div class="route-price">From ₹2,800</div>
+            <div class="route-time">~5 hrs · Multiple vehicles</div>
+          </div>
+        </div>
+      </div>
+      <div class="route-card">
+        <div class="route-card-bg bg-amritsar"></div>
+        <div class="route-card-overlay"></div>
+        <div class="route-card-content">
+          <div class="route-distance-badge">✈ ~250 km</div>
+          <div class="route-card-from-to">Ludhiana <span>→</span> Delhi IGI</div>
+          <div class="route-card-meta">
+            <div class="route-price">From ₹3,500</div>
+            <div class="route-time">~4.5 hrs</div>
+          </div>
+        </div>
+      </div>
+      <div class="route-card">
+        <div class="route-card-bg bg-chandigarh"></div>
+        <div class="route-card-overlay"></div>
+        <div class="route-card-content">
+          <div class="route-distance-badge">🏙 ~230 km</div>
+          <div class="route-card-from-to">Amritsar <span>→</span> Chandigarh</div>
+          <div class="route-card-meta">
+            <div class="route-price">From ₹2,200</div>
+            <div class="route-time">~3.5 hrs</div>
+          </div>
+        </div>
+      </div>
+      <div class="route-card">
+        <div class="route-card-bg bg-amritsar"></div>
+        <div class="route-card-overlay"></div>
+        <div class="route-card-content">
+          <div class="route-distance-badge">🏙 ~90 km</div>
+          <div class="route-card-from-to">Patiala <span>→</span> Chandigarh</div>
+          <div class="route-card-meta">
+            <div class="route-price">From ₹1,200</div>
+            <div class="route-time">~1.5 hrs</div>
+          </div>
+        </div>
+      </div>
+      <div class="route-card">
+        <div class="route-card-bg bg-chandigarh"></div>
+        <div class="route-card-overlay"></div>
+        <div class="route-card-content">
+          <div class="route-distance-badge">✈ ~420 km</div>
+          <div class="route-card-from-to">Amritsar <span>→</span> Delhi IGI</div>
+          <div class="route-card-meta">
+            <div class="route-price">From ₹5,500</div>
+            <div class="route-time">~6 hrs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VEHICLES -->
+<section class="vehicles-section" id="vehicles">
+  <div class="section-inner">
+    <div class="section-tag">Our Fleet</div>
+    <h2 class="section-title">Choose Your Ride</h2>
+    <p class="section-sub">Comfortable, clean, and well-maintained vehicles for every type of journey.</p>
+
+    <div class="vehicles-grid">
+      <div class="vehicle-card">
+        <span class="vehicle-tag">Most Popular</span>
+        <span class="vehicle-emoji">🚗</span>
+        <div class="vehicle-name">Sedan</div>
+        <div class="vehicle-desc">Swift Dzire / Honda Amaze. Up to 4 passengers. Ideal for couples and small families.</div>
+        <div class="vehicle-rate">₹12–14/km</div>
+        <div class="vehicle-rate-sub">Fixed intercity fare</div>
+      </div>
+      <div class="vehicle-card">
+        <span class="vehicle-tag">Best for Groups</span>
+        <span class="vehicle-emoji">🚙</span>
+        <div class="vehicle-name">SUV</div>
+        <div class="vehicle-desc">Innova Crysta / Ertiga. Up to 6 passengers. Spacious with luggage for airport trips.</div>
+        <div class="vehicle-rate">₹18–22/km</div>
+        <div class="vehicle-rate-sub">Fixed intercity fare</div>
+      </div>
+      <div class="vehicle-card">
+        <span class="vehicle-tag">Premium</span>
+        <span class="vehicle-emoji">🚘</span>
+        <div class="vehicle-name">Premium SUV</div>
+        <div class="vehicle-desc">Toyota Fortuner / Mahindra XUV700. Pure luxury. Up to 6 passengers.</div>
+        <div class="vehicle-rate">₹25–30/km</div>
+        <div class="vehicle-rate-sub">Fixed intercity fare</div>
+      </div>
+      <div class="vehicle-card">
+        <span class="vehicle-tag">Corporate / Events</span>
+        <span class="vehicle-emoji">🚐</span>
+        <div class="vehicle-name">Tempo Traveller</div>
+        <div class="vehicle-desc">Up to 12 passengers. Perfect for corporate groups, pilgrimages, and family trips.</div>
+        <div class="vehicle-rate">₹30–35/km</div>
+        <div class="vehicle-rate-sub">Fixed intercity fare</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY AERO SARATHI -->
+<section class="why-section" id="why">
+  <div class="section-inner">
+    <div class="why-grid">
+      <div class="why-left">
+        <div class="section-tag">Why Choose Us</div>
+        <h2 class="section-title">The Aero Sarathi Difference</h2>
+        <p class="section-sub">We're not just another taxi aggregator. We're building Punjab's most reliable travel platform — with owned fleet, trained drivers, and transparent pricing.</p>
+
+        <div class="why-features">
+          <div class="why-feat">
+            <div class="feat-icon-wrap">🛡</div>
+            <div>
+              <div class="feat-title">Fixed, Transparent Fares</div>
+              <p class="feat-desc">No surge pricing at 2 AM. No hidden charges. What you see while booking is what you pay. Always.</p>
+            </div>
+          </div>
+          <div class="why-feat">
+            <div class="feat-icon-wrap">⏰</div>
+            <div>
+              <div class="feat-title">Pre-Booked = Never Stranded</div>
+              <p class="feat-desc">Book 24 hours in advance, your driver is confirmed 3 hours before. No last-minute scrambling for airport rides.</p>
+            </div>
+          </div>
+          <div class="why-feat">
+            <div class="feat-icon-wrap">✅</div>
+            <div>
+              <div class="feat-title">Verified Professional Drivers</div>
+              <p class="feat-desc">Every driver is police-verified, route-trained, and rated by real passengers. We back it with our own fleet.</p>
+            </div>
+          </div>
+          <div class="why-feat">
+            <div class="feat-icon-wrap">📍</div>
+            <div>
+              <div class="feat-title">Live GPS Tracking</div>
+              <p class="feat-desc">Track your ride in real time. Share live location with family. Know exactly when your driver arrives.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="why-visual">
+        <div class="float-badge">
+          <div class="float-badge-num">98%</div>
+          <div class="float-badge-label">On-time rate</div>
+        </div>
+        <div class="why-big-card">
+          <div class="live-tracker-label">
+            <span class="live-dot"></span>
+            Live trip status
+          </div>
+
+          <div class="trip-card-inner">
+            <div class="trip-route-display">
+              <div>
+                <div class="trip-city">LDH</div>
+                <div class="trip-city-sub">Ludhiana</div>
+              </div>
+              <div class="trip-arrow-wrap">
+                <div class="trip-line"></div>
+                <div class="trip-plane">✈</div>
+                <div class="trip-line"></div>
+              </div>
+              <div>
+                <div class="trip-city">DEL</div>
+                <div class="trip-city-sub">IGI Airport</div>
+              </div>
+            </div>
+            <div class="trip-meta-row">
+              <div class="trip-meta-item">
+                <div class="trip-meta-val">₹3,800</div>
+                <div class="trip-meta-key">Fixed Fare</div>
+              </div>
+              <div class="trip-meta-item">
+                <div class="trip-meta-val">04:30 AM</div>
+                <div class="trip-meta-key">Pickup Time</div>
+              </div>
+              <div class="trip-meta-item">
+                <div class="trip-meta-val">Innova</div>
+                <div class="trip-meta-key">Vehicle</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="driver-card-inner">
+            <div class="driver-avatar">RS</div>
+            <div>
+              <div class="driver-name">Rajinder Singh</div>
+              <div class="driver-rating"><span>★★★★★</span> 4.9 · 340 trips</div>
+            </div>
+            <div class="driver-status">En Route</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+  <div class="section-inner">
+    <div class="section-tag">Real Reviews</div>
+    <h2 class="section-title">What Riders Say</h2>
+
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Booked a 4 AM pickup from Ludhiana to Delhi airport. Driver arrived 10 minutes early. Car was clean, AC was cold. Exactly what you need before a flight."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">AK</div>
+          <div>
+            <div class="testi-name">Arjun Kaur</div>
+            <div class="testi-route">Ludhiana → Delhi IGI</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Finally a taxi service in Punjab that actually confirms the driver beforehand. Took a family of 6 in Innova to Amritsar. Smooth experience, no surprises."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">PS</div>
+          <div>
+            <div class="testi-name">Paramjit Sharma</div>
+            <div class="testi-route">Chandigarh → Amritsar</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★☆</div>
+        <p class="testi-text">"Used it for a corporate group transfer. 12 people, Tempo Traveller, Patiala to Chandigarh airport. Fixed rate, professional driver. Will book again for our next offsite."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">MG</div>
+          <div>
+            <div class="testi-name">Manpreet Grewal</div>
+            <div class="testi-route">Patiala → Chandigarh</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA STRIP -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2 class="cta-title">Ready to Book Your Ride?</h2>
+    <p class="cta-sub">Pre-book today and travel worry-free. Fixed fares, confirmed driver, live tracking — all in one place.</p>
+    <a href="#book" class="cta-btn">Book My Ride Now →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">AERO <span>SARATHI</span></div>
+      <div class="footer-tagline">YOUR JOURNEY OUR MISSION</div>
+      <p class="footer-desc">Punjab's most trusted pre-booking taxi platform. Serving airport routes, intercity travel, and outstation rides across North India.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Quick Links</div>
+      <ul class="footer-links">
+        <li><a href="#">Book a Ride</a></li>
+        <li><a href="#">Popular Routes</a></li>
+        <li><a href="#">Our Fleet</a></li>
+        <li><a href="#">How It Works</a></li>
+        <li><a href="#">Driver Login</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Top Routes</div>
+      <ul class="footer-links">
+        <li><a href="#">Ludhiana → Delhi</a></li>
+        <li><a href="#">Chandigarh → Delhi</a></li>
+        <li><a href="#">Amritsar → Delhi</a></li>
+        <li><a href="#">Patiala → Chandigarh</a></li>
+        <li><a href="#">Jalandhar → Delhi</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Support</div>
+      <ul class="footer-links">
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Cancellation Policy</a></li>
+        <li><a href="#">Refund Policy</a></li>
+        <li><a href="#">Partner with Us</a></li>
+        <li><a href="#">Become a Driver</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2024 Indo Chariot Pvt Ltd · Aero Sarathi · All rights reserved</div>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function setTab(btn, type) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  function selectVehicle(el) {
+    document.querySelectorAll('.vehicle-opt').forEach(v => v.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.step-card, .route-card, .vehicle-card, .testi-card, .why-feat').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = `opacity 0.5s ${i * 0.08}s ease, transform 0.5s ${i * 0.08}s ease`;
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
