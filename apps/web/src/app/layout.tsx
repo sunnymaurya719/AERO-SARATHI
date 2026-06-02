@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   title: 'Aero Sarathi — Pre-booked Airport & Intercity Taxis in Punjab',
   description:
     'Book reliable, fixed-fare taxis across Punjab, to and from the airport, and intercity. Transparent pricing, professional drivers, pay a small token to confirm.',
+  icons: {
+    icon: '/icon.png',
+  },
   openGraph: {
     title: 'Aero Sarathi',
     description: 'Pre-booked airport & intercity taxis in Punjab.',

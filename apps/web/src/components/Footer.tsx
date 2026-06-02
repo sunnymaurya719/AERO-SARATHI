@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Logo } from './Logo';
 
 const COLUMNS = [
   {
@@ -35,16 +36,11 @@ const COLUMNS = [
 
 export function Footer() {
   return (
-    <footer className="bg-brand-navy-dark px-6 pb-8 pt-16 text-white/50 md:px-12">
+    <footer className="bg-[#F8F7F4] px-6 pb-8 pt-16 text-brand-navy/80 md:px-12 border-t border-brand-orange/15">
       <div className="mx-auto grid max-w-6xl gap-12 pb-12 md:grid-cols-[2fr_1fr_1fr_1fr]">
         <div>
-          <div className="font-heading text-2xl font-bold tracking-wide text-white">
-            AERO <span className="text-brand-orange">SARATHI</span>
-          </div>
-          <div className="mb-4 mt-1 text-xs tracking-[0.15em] text-brand-orange">
-            YOUR JOURNEY OUR MISSION
-          </div>
-          <p className="max-w-xs text-sm leading-relaxed">
+          <Logo />
+          <p className="max-w-xs text-sm leading-relaxed text-brand-navy/70">
             Punjab&apos;s most trusted pre-booking taxi platform. Serving airport routes, intercity
             travel, and outstation rides across North India.
           </p>
@@ -52,11 +48,11 @@ export function Footer() {
 
         {COLUMNS.map((col) => (
           <div key={col.title}>
-            <div className="mb-5 font-heading text-base font-semibold text-white">{col.title}</div>
+            <div className="mb-5 font-heading text-base font-semibold text-brand-navy">{col.title}</div>
             <ul className="flex flex-col gap-2.5">
               {col.links.map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-sm transition hover:text-brand-orange">
+                  <Link href={link.href} className="text-sm transition text-brand-navy hover:text-brand-orange">
                     {link.label}
                   </Link>
                 </li>
@@ -66,12 +62,12 @@ export function Footer() {
         ))}
       </div>
 
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs sm:flex-row">
-        <div>© {new Date().getFullYear()} Indo Chariot Pvt Ltd · Aero Sarathi · All rights reserved</div>
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 pt-6 text-xs sm:flex-row">
+        <div className="text-brand-navy/70">© {new Date().getFullYear()} Indo Chariot Pvt Ltd · Aero Sarathi · All rights reserved</div>
         <div className="flex gap-5">
-          <Link href="#" className="text-white/30 transition hover:text-brand-orange">Privacy Policy</Link>
-          <Link href="#" className="text-white/30 transition hover:text-brand-orange">Terms of Service</Link>
-          <Link href="#" className="text-white/30 transition hover:text-brand-orange">Cookie Policy</Link>
+          <Link href="#" className="text-brand-navy/60 transition hover:text-brand-orange">Privacy Policy</Link>
+          <Link href="#" className="text-brand-navy/60 transition hover:text-brand-orange">Terms of Service</Link>
+          <Link href="#" className="text-brand-navy/60 transition hover:text-brand-orange">Cookie Policy</Link>
         </div>
       </div>
     </footer>

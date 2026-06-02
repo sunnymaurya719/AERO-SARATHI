@@ -340,7 +340,7 @@ export interface AuditEventRow {
   at: string;
 }
 
-// ── Phase 4: Assignment Automation & Driver Portal ─────────────────────────
+// ── Phase 4: Assignment Automation & Driver Portal ───────────────────────
 
 export type DriverAvailability = 'OFFLINE' | 'ONLINE' | 'BUSY';
 
