@@ -5,18 +5,13 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { Logo } from './Logo';
 
-// const LINKS = [
-//   { href: '/routes', label: 'Routes' },
-//   { href: '/vehicles', label: 'Vehicles' },
-//   { href: '/#how', label: 'How It Works' },
-//   { href: '/#why', label: 'Why Us' },
-// ];
 const LINKS = [
   { href: '/routes', label: 'Routes' },
-  { href: '/', label: 'Vehicles' },
-  { href: '/', label: 'How It Works' },
-  { href: '/', label: 'Why Us' },
+  { href: '/vehicles', label: 'Vehicles' },
+  { href: '/#how', label: 'How It Works' },
+  { href: '/#why', label: 'Why Us' },
 ];
+
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);

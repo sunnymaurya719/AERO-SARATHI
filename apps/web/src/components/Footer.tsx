@@ -40,7 +40,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-6xl gap-12 pb-12 md:grid-cols-[2fr_1fr_1fr_1fr]">
         <div>
           <Logo />
-          <p className="max-w-xs text-sm leading-relaxed text-brand-navy/70">
+          <p className="max-w-xs text-sm leading-relaxed text-brand-navy/70 mt-4">
             Punjab&apos;s most trusted pre-booking taxi platform. Serving airport routes, intercity
             travel, and outstation rides across North India.
           </p>
@@ -63,7 +63,7 @@ export function Footer() {
       </div>
 
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 pt-6 text-xs sm:flex-row">
-        <div className="text-brand-navy/70">© {new Date().getFullYear()} Indo Chariot Pvt Ltd · Aero Sarathi · All rights reserved</div>
+        <div className="text-brand-navy/70">© {new Date().getFullYear()} Indo Chariot Pvt Ltd · Aero Sarathi | All rights reserved | Developed and Managed by Technowiz IT Solutions</div>
         <div className="flex gap-5">
           <Link href="#" className="text-brand-navy/60 transition hover:text-brand-orange">Privacy Policy</Link>
           <Link href="#" className="text-brand-navy/60 transition hover:text-brand-orange">Terms of Service</Link>
